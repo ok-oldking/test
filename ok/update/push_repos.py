@@ -90,15 +90,18 @@ def main():
         # Add the copied files and folders to the git index
         run_command("git add .")
         try:
-            run_command('git commit -m "Update files and folders from source repository"')
+            run_command(f'git commit -m "update for {" ".join(current_tags)}"')
         except Exception as e:
             print(f"continue")
             continue
         # Remove and re-tag in the target repository
         for tag in current_tags:
             if tag:
-                run_command(f"git tag -d {tag}")
-                run_command(f"git tag {tag}")
+                try:
+                    run_command(f"git tag -d {tag}")
+                except Exception as e:
+                    print(f"Error: {tag} could not be deleted.")
+                run_command(f'git tag {tag} -m "add {tag}"')
 
         # Push the changes and tags to the remote repository
         run_command(f"git push origin {current_branch} --force")
